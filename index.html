@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Fidget Spinner</title>
+    <title>Interactive Fidget Spinner & Bubble Wrap</title>
     <style>
         /* General styling for the body to center the content */
         body {
@@ -18,6 +18,64 @@
             touch-action: none; /* Disable default touch actions like pinch-zoom */
         }
 
+        /* Bubble Wrap Container */
+        .bubble-wrap-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            gap: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            z-index: 0;
+        }
+
+        /* Individual Bubble Styling */
+        .bubble {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 65% 15%, white 1px, #74b9ff 3%, #0984e3 60%, #74b9ff 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Popped Bubble Styling */
+        .bubble.popped {
+            background: #5a8ebb;
+            transform: scale(0.9);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3);
+            cursor: default;
+        }
+        
+        /* Reset Button Styling */
+        #reset-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 20;
+            transition: background-color 0.2s;
+        }
+        #reset-button:hover {
+            background-color: #c0392b;
+        }
+
+
         /* Container for the fidget spinner */
         .spinner-container {
             position: relative;
@@ -25,6 +83,7 @@
             height: 200px;
             cursor: grab;
             user-select: none; /* Prevents text selection while dragging */
+            z-index: 10; /* Ensure spinner is above the bubble wrap */
         }
 
         .spinner-container:active {
@@ -98,14 +157,18 @@
         .instructions {
             position: absolute;
             bottom: 20px;
-            color: #bdc3c7;
+            color: #ecf0f1;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
             text-align: center;
             width: 100%;
             font-size: 1rem;
+            z-index: 20;
         }
     </style>
 </head>
 <body>
+    <div class="bubble-wrap-container" id="bubble-wrap-container"></div>
+    <button id="reset-button">Reset Bubbles</button>
 
     <div class="spinner-container" id="spinner-container">
         <div class="spinner" id="spinner">
@@ -115,22 +178,20 @@
         </div>
         <div class="bearing"></div>
     </div>
-    <div class="instructions">Click and Drag to Spin!</div>
+    <div class="instructions">Click and Drag to Spin! Pop the bubbles!</div>
 
     <script>
-        // DOM element references
+        // --- FIDGET SPINNER LOGIC ---
         const spinner = document.getElementById('spinner');
         const spinnerContainer = document.getElementById('spinner-container');
 
-        // State variables
         let isDragging = false;
         let rotation = 0;
         let velocity = 0;
         let lastAngle = 0;
         let lastTime = 0;
-        const friction = 0.99; // Friction coefficient to slow down the spinner
+        const friction = 0.99; 
 
-        // Function to get the angle from the center of the spinner to the mouse/touch point
         function getAngle(event) {
             const rect = spinnerContainer.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
@@ -140,75 +201,110 @@
             return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
         }
         
-        // Event handler for when dragging starts
         function onDragStart(event) {
             isDragging = true;
             spinnerContainer.style.cursor = 'grabbing';
-            velocity = 0; // Reset velocity when grabbed
+            velocity = 0;
             lastAngle = getAngle(event);
             lastTime = performance.now();
         }
 
-        // Event handler for while dragging
         function onDragMove(event) {
             if (!isDragging) return;
-
             const currentAngle = getAngle(event);
             const currentTime = performance.now();
-
             let deltaAngle = currentAngle - lastAngle;
-
-            // Handle the angle wrapping around (e.g., from 180 to -179 degrees)
             if (Math.abs(deltaAngle) > 180) {
                 deltaAngle = deltaAngle > 0 ? deltaAngle - 360 : deltaAngle + 360;
             }
-            
             const deltaTime = currentTime - lastTime;
-
             if (deltaTime > 0) {
-                 velocity = (deltaAngle / deltaTime) * 15; // Calculate velocity
+                 velocity = (deltaAngle / deltaTime) * 15;
             }
-
             rotation += deltaAngle;
             spinner.style.transform = `rotate(${rotation}deg)`;
-            
             lastAngle = currentAngle;
             lastTime = currentTime;
         }
 
-        // Event handler for when dragging ends
         function onDragEnd() {
             isDragging = false;
             spinnerContainer.style.cursor = 'grab';
         }
 
-        // The main animation loop
         function animate() {
             if (!isDragging) {
                 rotation += velocity;
-                velocity *= friction; // Apply friction to slow down
-
-                // Stop the animation if the velocity is very low
+                velocity *= friction;
                 if (Math.abs(velocity) < 0.01) {
                     velocity = 0;
                 }
-                
                 spinner.style.transform = `rotate(${rotation}deg)`;
             }
             requestAnimationFrame(animate);
         }
 
-        // Add event listeners for both mouse and touch events
         spinnerContainer.addEventListener('mousedown', onDragStart);
         window.addEventListener('mousemove', onDragMove);
         window.addEventListener('mouseup', onDragEnd);
-        
         spinnerContainer.addEventListener('touchstart', onDragStart, { passive: true });
         window.addEventListener('touchmove', onDragMove, { passive: true });
         window.addEventListener('touchend', onDragEnd);
 
-        // Start the animation loop
         animate();
+
+        // --- BUBBLE WRAP LOGIC ---
+        const bubbleContainer = document.getElementById('bubble-wrap-container');
+        const resetButton = document.getElementById('reset-button');
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playPopSound() {
+            // Check if context is running, and resume if not (for browser autoplay policies)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            const now = audioContext.currentTime;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(400, now);
+            oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            gainNode.gain.setValueAtTime(0.5, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start(now);
+            oscillator.stop(now + 0.1);
+        }
+
+        function createBubbles() {
+            bubbleContainer.innerHTML = ''; // Clear existing bubbles
+            const bubbleSize = 60 + 15; // Bubble size + gap
+            const cols = Math.floor(window.innerWidth / bubbleSize);
+            const rows = Math.floor(window.innerHeight / bubbleSize);
+            const totalBubbles = cols * rows;
+
+            for (let i = 0; i < totalBubbles; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                bubble.addEventListener('mousedown', (e) => {
+                    // Prevent popping a bubble from grabbing the spinner behind it
+                    e.stopPropagation(); 
+                    if (!bubble.classList.contains('popped')) {
+                        bubble.classList.add('popped');
+                        playPopSound();
+                    }
+                });
+                bubbleContainer.appendChild(bubble);
+            }
+        }
+
+        resetButton.addEventListener('click', createBubbles);
+
+        // Initial creation and recreation on window resize
+        window.addEventListener('resize', createBubbles);
+        createBubbles();
+
     </script>
 </body>
 </html>
