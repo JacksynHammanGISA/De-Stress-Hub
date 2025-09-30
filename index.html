@@ -11,10 +11,41 @@
         }
         body {
             margin: 0;
+            padding-top: 50px; /* Space for fixed nav */
             background-color: #2c3e50;
             font-family: 'Inter', sans-serif;
             color: #ecf0f1;
             overflow-x: hidden;
+        }
+        
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(44, 62, 80, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 10px;
+            height: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: rgba(236, 240, 241, 0.2);
         }
 
         /* Section layout */
@@ -25,16 +56,23 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            padding: 20px;
+            padding: 80px 20px; /* More padding */
             box-sizing: border-box;
             border-bottom: 2px solid #34495e;
-            overflow: hidden; /* Prevent content from spilling out */
+            overflow: hidden;
+        }
+        /* Alternating background gradients for visual separation */
+        .fidget-section:nth-of-type(odd) {
+             background: #2c3e50;
+        }
+        .fidget-section:nth-of-type(even) {
+            background: #34495e;
         }
         
         .fidget-title {
             position: absolute;
-            top: 20px;
-            font-size: 2rem;
+            top: 70px; /* Adjusted for nav bar */
+            font-size: 2.5rem;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
@@ -44,464 +82,32 @@
             bottom: 20px;
             font-size: 1rem;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        /* General button style */
+        .action-button {
+            padding: 12px 24px; font-size: 1rem; color: white; border: none;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         /* --- Bubble Wrap Section --- */
-        #bubble-wrap-section {
-             justify-content: flex-start; /* Align content to the top */
-        }
         .bubble-wrap-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            padding: 80px 15px 15px 15px; /* Padding to avoid title */
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 15px; padding: 15px; max-width: 800px;
         }
         .bubble {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background: radial-gradient(circle at 65% 15%, white 1px, #74b9ff 3%, #0984e3 60%, #74b9ff 100%);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.1s ease-in-out;
+            border-radius: 50%; cursor: pointer; transition: all 0.1s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .bubble.popped {
-            background: #5a8ebb;
-            transform: scale(0.9);
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3);
-            cursor: default;
+            background: #5a8ebb; transform: scale(0.9);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); cursor: default;
         }
-        #reset-button {
-            position: absolute;
-            top: 25px;
-            right: 20px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: white;
-            background-color: #e74c3c;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            z-index: 10;
-        }
-        
-        /* --- Fidget Spinner Section --- */
-        .spinner-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            cursor: grab;
-            user-select: none;
-        }
-        .spinner-container:active { cursor: grabbing; }
-        .spinner { position: absolute; width: 100%; height: 100%; will-change: transform; }
-        .arm {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #3498db, #2980b9);
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            margin-left: -40px;
-            margin-top: -40px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .arm:nth-child(1) { transform: translateY(-60px); }
-        .arm:nth-child(2) { transform: rotate(120deg) translateY(-60px); }
-        .arm:nth-child(3) { transform: rotate(240deg) translateY(-60px); }
-        .bearing {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(145deg, #bdc3c7, #95a5a6);
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border: 5px solid #7f8c8d;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        .bearing::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #2c3e50;
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        /* --- Newton's Cradle Section --- */
-        .newtons-cradle-container { display: flex; height: 150px; }
-        .cradle-ball {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle at 65% 15%, #ffffff 1px, #e0e0e0 3%, #a7a7a7 60%, #e0e0e0 100%);
-            border-radius: 50%;
-            cursor: pointer;
-            transform-origin: top center;
-        }
-        .cradle-ball::before {
-            content: '';
-            position: absolute;
-            top: -110px;
-            left: 50%;
-            width: 1px;
-            height: 110px;
-            background: #c7c7c7;
-            transform: translateX(-50%);
-        }
-
-        /* --- Light Switches Section --- */
-        .switch-panel { display: flex; gap: 20px; }
-        .light-switch { position: relative; }
-        .light-switch input { display: none; }
-        .light-switch .slider {
-            width: 40px; height: 80px; background-color: #34495e; border-radius: 40px; cursor: pointer;
-            transition: background-color 0.3s; border: 2px solid #2c3e50;
-        }
-        .light-switch .slider::before {
-            content: ''; position: absolute; width: 30px; height: 30px; background-color: #bdc3c7;
-            border-radius: 50%; top: 5px; left: 5px; transition: transform 0.3s;
-        }
-        .light-switch input:checked + .slider { background-color: #f1c40f; }
-        .light-switch input:checked + .slider::before { transform: translateY(40px); }
-
-        /* --- Zen Garden Section --- */
-        #zen-garden {
-            background-color: #e0d8c7;
-            border-radius: 15px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
-            cursor: crosshair;
-        }
-        #rake-button {
-            position: absolute; bottom: 80px; padding: 10px 20px; font-size: 1rem; color: white;
-            background-color: #27ae60; border: none; border-radius: 8px; cursor: pointer;
-        }
-
-        /* --- Mechanical Keyboard Section --- */
-        .keyboard { display: flex; gap: 10px; }
-        .key {
-            width: 60px; height: 60px; background: #34495e; border-radius: 8px;
-            border-bottom: 5px solid #2c3e50; display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; cursor: pointer; user-select: none; transition: all 0.07s;
-        }
-        .key:active, .key.pressed {
-            transform: translateY(3px);
-            border-bottom-width: 2px;
-            background: #4a6572;
-        }
-        
-        /* --- Fidget Cube Section --- */
-        .fidget-cube-container { width: 250px; height: 250px; background: #95a5a6; border-radius: 20px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .cube-button { background: #3498db; border-radius: 50%; cursor: pointer; transition: background-color 0.1s; }
-        .cube-button:active { background: #2980b9; }
-        .joystick-base { background: #2c3e50; border-radius: 50%; display: flex; justify-content: center; align-items: center; grid-column: 2 / 3; grid-row: 2 / 3; }
-        #joystick-thumb { width: 40px; height: 40px; background: #e74c3c; border-radius: 50%; cursor: grab; position: relative; }
-        .cube-switch { grid-column: 1 / -1; } /* spans all columns */
-
-    </style>
-</head>
-<body>
-
-    <!-- Section 1: Bubble Wrap -->
-    <section id="bubble-wrap-section" class="fidget-section">
-        <h2 class="fidget-title">Bubble Wrap</h2>
-        <button id="reset-button">Reset Bubbles</button>
-        <div class="bubble-wrap-container" id="bubble-wrap-container"></div>
-        <p class="instructions">Click to pop the bubbles!</p>
-    </section>
-
-    <!-- Section 2: Fidget Spinner -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Fidget Spinner</h2>
-        <div class="spinner-container" id="spinner-container">
-            <div class="spinner" id="spinner">
-                <div class="arm"></div>
-                <div class="arm"></div>
-                <div class="arm"></div>
-            </div>
-            <div class="bearing"></div>
-        </div>
-        <p class="instructions">Click and drag to spin!</p>
-    </section>
-    
-    <!-- Section 3: Mechanical Keyboard -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Mechanical Keyboard</h2>
-        <div class="keyboard" id="keyboard"></div>
-        <p class="instructions">Click the keys!</p>
-    </section>
-
-    <!-- Section 4: Newton's Cradle -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Newton's Cradle</h2>
-        <div class="newtons-cradle-container" id="newtons-cradle"></div>
-        <p class="instructions">Click the end balls to start the motion.</p>
-    </section>
-    
-    <!-- Section 5: Fidget Cube -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Fidget Cube</h2>
-        <div class="fidget-cube-container">
-            <div class="cube-button" onclick="playClickSound(0.8, 1500)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1200)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1800)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1000)"></div>
-            <div class="joystick-base">
-                <div id="joystick-thumb"></div>
-            </div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1600)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1300)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1100)"></div>
-            <div class="cube-button" onclick="playClickSound(0.8, 1900)"></div>
-        </div>
-        <p class="instructions">Click buttons and drag the joystick.</p>
-    </section>
-    
-    <!-- Section 6: Light Switches -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Light Switches</h2>
-        <div class="switch-panel" id="switch-panel"></div>
-        <p class="instructions">Click the switches!</p>
-    </section>
-
-    <!-- Section 7: Zen Garden -->
-    <section class="fidget-section">
-        <h2 class="fidget-title">Zen Garden</h2>
-        <canvas id="zen-garden"></canvas>
-        <button id="rake-button">Rake the Sand</button>
-        <p class="instructions">Click and drag to draw in the sand.</p>
-    </section>
-
-
-    <script>
-        // --- UNIVERSAL AUDIO CONTEXT ---
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        function resumeAudio() { if (audioContext.state === 'suspended') audioContext.resume(); }
-        document.body.addEventListener('click', resumeAudio, { once: true });
-        document.body.addEventListener('touchstart', resumeAudio, { once: true });
-
-        function playClickSound(gain = 0.5, freq = 400) {
-            const now = audioContext.currentTime;
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(freq, now);
-            oscillator.frequency.exponentialRampToValueAtTime(freq / 2, now + 0.1);
-            gainNode.gain.setValueAtTime(gain, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start(now);
-            oscillator.stop(now + 0.1);
-        }
-
-        // --- BUBBLE WRAP LOGIC ---
-        const bubbleContainer = document.getElementById('bubble-wrap-container');
-        const resetButton = document.getElementById('reset-button');
-        function createBubbles() {
-            bubbleContainer.innerHTML = ''; 
-            const bubbleSize = 50 + 15;
-            const cols = Math.floor(bubbleContainer.parentElement.clientWidth / bubbleSize);
-            const rows = Math.floor((bubbleContainer.parentElement.clientHeight - 80) / bubbleSize);
-            for (let i = 0; i < cols * rows; i++) {
-                const bubble = document.createElement('div');
-                bubble.classList.add('bubble');
-                bubble.addEventListener('mousedown', () => {
-                    if (!bubble.classList.contains('popped')) {
-                        bubble.classList.add('popped');
-                        playClickSound(0.5, 400);
-                    }
-                });
-                bubbleContainer.appendChild(bubble);
-            }
-        }
-        resetButton.addEventListener('click', createBubbles);
-        window.addEventListener('resize', createBubbles);
-        createBubbles();
-
-        // --- FIDGET SPINNER LOGIC ---
-        const spinner = document.getElementById('spinner');
-        const spinnerContainer = document.getElementById('spinner-container');
-        let isDraggingSpinner = false, rotation = 0, velocity = 0, lastAngle = 0, lastTime = 0;
-        const friction = 0.99; 
-        function getAngle(event) {
-            const rect = spinnerContainer.getBoundingClientRect();
-            const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            const pos = event.touches ? event.touches[0] : event;
-            return Math.atan2(pos.clientY - center.y, pos.clientX - center.x) * (180 / Math.PI);
-        }
-        function onSpinnerDragStart(event) {
-            isDraggingSpinner = true; velocity = 0; lastAngle = getAngle(event); lastTime = performance.now();
-        }
-        function onSpinnerDragMove(event) {
-            if (!isDraggingSpinner) return;
-            const currentAngle = getAngle(event);
-            const currentTime = performance.now();
-            let deltaAngle = currentAngle - lastAngle;
-            if (Math.abs(deltaAngle) > 180) deltaAngle += deltaAngle > 0 ? -360 : 360;
-            const deltaTime = currentTime - lastTime;
-            if (deltaTime > 0) velocity = (deltaAngle / deltaTime) * 15;
-            rotation += deltaAngle;
-            spinner.style.transform = `rotate(${rotation}deg)`;
-            lastAngle = currentAngle; lastTime = currentTime;
-        }
-        function onSpinnerDragEnd() { isDraggingSpinner = false; }
-        function animateSpinner() {
-            if (!isDraggingSpinner) {
-                rotation += velocity; velocity *= friction;
-                if (Math.abs(velocity) < 0.01) velocity = 0;
-                spinner.style.transform = `rotate(${rotation}deg)`;
-            }
-            requestAnimationFrame(animateSpinner);
-        }
-        spinnerContainer.addEventListener('mousedown', onSpinnerDragStart);
-        window.addEventListener('mousemove', onSpinnerDragMove);
-        window.addEventListener('mouseup', onSpinnerDragEnd);
-        spinnerContainer.addEventListener('touchstart', onSpinnerDragStart, { passive: true });
-        window.addEventListener('touchmove', onSpinnerDragMove, { passive: true });
-        window.addEventListener('touchend', onSpinnerDragEnd);
-        animateSpinner();
-
-        // --- NEWTON'S CRADLE LOGIC ---
-        const cradleContainer = document.getElementById('newtons-cradle');
-        const numBalls = 5;
-        let cradleAnimating = false;
-        for (let i = 0; i < numBalls; i++) {
-            const ball = document.createElement('div');
-            ball.classList.add('cradle-ball');
-            ball.dataset.index = i;
-            cradleContainer.appendChild(ball);
-        }
-        const cradleBalls = Array.from(cradleContainer.children);
-        function swing(ballsToSwing, direction) {
-            if (cradleAnimating) return;
-            cradleAnimating = true;
-            ballsToSwing.forEach(b => b.style.transition = 'transform 0.25s ease-in');
-            ballsToSwing.forEach(b => b.style.transform = `rotate(${direction * 45}deg)`);
-            setTimeout(() => {
-                ballsToSwing.forEach(b => b.style.transition = 'transform 0.25s ease-out');
-                ballsToSwing.forEach(b => b.style.transform = `rotate(0deg)`);
-                playClickSound(0.2, 100);
-                setTimeout(() => {
-                    const oppositeBalls = direction === -1 
-                        ? cradleBalls.slice(-ballsToSwing.length) 
-                        : cradleBalls.slice(0, ballsToSwing.length);
-                    oppositeBalls.forEach(b => b.style.transition = 'transform 0.25s ease-in');
-                    oppositeBalls.forEach(b => b.style.transform = `rotate(${-direction * 45}deg)`);
-                    setTimeout(() => {
-                        oppositeBalls.forEach(b => b.style.transition = 'transform 0.25s ease-out');
-                        oppositeBalls.forEach(b => b.style.transform = `rotate(0deg)`);
-                        playClickSound(0.2, 100);
-                        cradleAnimating = false;
-                    }, 250);
-                }, 250);
-            }, 250);
-        }
-        cradleBalls.forEach((ball, i) => {
-            ball.addEventListener('click', () => {
-                if (i < numBalls / 2) swing(cradleBalls.slice(0, i + 1), -1);
-                else swing(cradleBalls.slice(i), 1);
-            });
-        });
-        
-        // --- LIGHT SWITCH LOGIC ---
-        const switchContainer = document.getElementById('switch-panel');
-        for (let i=0; i < 4; i++) {
-            const label = document.createElement('label');
-            label.className = 'light-switch';
-            const input = document.createElement('input');
-            input.type = 'checkbox';
-            const slider = document.createElement('div');
-            slider.className = 'slider';
-            input.addEventListener('change', () => playClickSound(0.7, 800));
-            label.append(input, slider);
-            switchContainer.appendChild(label);
-        }
-        
-        // --- ZEN GARDEN LOGIC ---
-        const canvas = document.getElementById('zen-garden');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        canvas.width = Math.min(window.innerWidth * 0.8, 500);
-        canvas.height = Math.min(window.innerHeight * 0.6, 300);
-        function clearCanvas() {
-            ctx.fillStyle = '#e0d8c7';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        clearCanvas();
-        document.getElementById('rake-button').addEventListener('click', clearCanvas);
-        function draw(e) {
-            if (!isDrawing) return;
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const pos = e.touches ? e.touches[0] : e;
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#c7bca1';
-            ctx.lineTo(pos.clientX - rect.left, pos.clientY - rect.top);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(pos.clientX - rect.left, pos.clientY - rect.top);
-        }
-        canvas.addEventListener('mousedown', (e) => { isDrawing = true; draw(e); });
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', () => { isDrawing = false; ctx.beginPath(); });
-        canvas.addEventListener('touchstart', (e) => { isDrawing = true; draw(e); }, { passive: false });
-        canvas.addEventListener('touchmove', draw, { passive: false });
-        window.addEventListener('touchend', () => { isDrawing = false; ctx.beginPath(); });
-
-        // --- MECHANICAL KEYBOARD LOGIC ---
-        const keyboardContainer = document.getElementById('keyboard');
-        const keys = ['Q', 'W', 'E', 'R'];
-        keys.forEach(keyChar => {
-            const keyElement = document.createElement('div');
-            keyElement.className = 'key';
-            keyElement.textContent = keyChar;
-            keyElement.addEventListener('mousedown', () => {
-                keyElement.classList.add('pressed');
-                playClickSound(1, 1200);
-            });
-            keyElement.addEventListener('mouseup', () => keyElement.classList.remove('pressed'));
-             keyElement.addEventListener('mouseleave', () => keyElement.classList.remove('pressed'));
-            keyboardContainer.appendChild(keyElement);
-        });
-
-        // --- FIDGET CUBE LOGIC (JOYSTICK) ---
-        const joystick = document.getElementById('joystick-thumb');
-        let isDraggingJoystick = false;
-        function onJoystickMove(e) {
-            if (!isDraggingJoystick) return;
-            const baseRect = joystick.parentElement.getBoundingClientRect();
-            const pos = e.touches ? e.touches[0] : e;
-            let x = pos.clientX - baseRect.left - baseRect.width / 2;
-            let y = pos.clientY - baseRect.top - baseRect.height / 2;
-            const maxDist = baseRect.width / 2 - joystick.width / 2;
-            const dist = Math.min(maxDist, Math.sqrt(x*x + y*y));
-            const angle = Math.atan2(y, x);
-            joystick.style.left = `${Math.cos(angle) * dist}px`;
-            joystick.style.top = `${Math.sin(angle) * dist}px`;
-        }
-        joystick.addEventListener('mousedown', () => isDraggingJoystick = true);
-        window.addEventListener('mousemove', onJoystickMove);
-        window.addEventListener('mouseup', () => {
-            isDraggingJoystick = false;
-            joystick.style.left = '0px'; joystick.style.top = '0px';
-        });
-        joystick.addEventListener('touchstart', (e) => { e.preventDefault(); isDraggingJoystick = true; }, { passive: false });
-        window.addEventListener('touchmove', onJoystickMove, { passive: false });
-        window.addEventListener('touchend', () => {
-            isDraggingJoystick = false;
-            joystick.style.left = '0px'; joystick.style.top = '0px';
-        });
-    </script>
-</body>
-</html>
+        #reset-button { background-color: #e74c3c; }
+        #reset-button:hover { background-color
 
