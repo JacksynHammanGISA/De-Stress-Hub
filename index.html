@@ -1,13 +1,14 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Fidget Spinner & Bubble Wrap</title>
+    <title>Interactive Fidget Toys</title>
     <style>
         /* General styling for the body to center the content */
         body {
             display: flex;
+            flex-direction: column; /* Allow stacking of spinner and fidget panel */
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -37,8 +38,8 @@
 
         /* Individual Bubble Styling */
         .bubble {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: radial-gradient(circle at 65% 15%, white 1px, #74b9ff 3%, #0984e3 60%, #74b9ff 100%);
             border-radius: 50%;
             cursor: pointer;
@@ -68,13 +69,12 @@
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            z-index: 20;
+            z-index: 30;
             transition: background-color 0.2s;
         }
         #reset-button:hover {
             background-color: #c0392b;
         }
-
 
         /* Container for the fidget spinner */
         .spinner-container {
@@ -83,22 +83,21 @@
             height: 200px;
             cursor: grab;
             user-select: none; /* Prevents text selection while dragging */
-            z-index: 10; /* Ensure spinner is above the bubble wrap */
+            z-index: 10;
+            margin-bottom: 20px; /* Space between spinner and new fidgets */
         }
 
         .spinner-container:active {
             cursor: grabbing;
         }
 
-        /* The main spinner element that will rotate */
         .spinner {
             position: absolute;
             width: 100%;
             height: 100%;
-            will-change: transform; /* Optimization for animations */
+            will-change: transform;
         }
 
-        /* Styling for the arms of the spinner */
         .arm {
             position: absolute;
             width: 80px;
@@ -112,20 +111,10 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Positioning each arm around the center */
-        .arm:nth-child(1) {
-            transform: translateY(-60px);
-        }
+        .arm:nth-child(1) { transform: translateY(-60px); }
+        .arm:nth-child(2) { transform: rotate(120deg) translateY(-60px); }
+        .arm:nth-child(3) { transform: rotate(240deg) translateY(-60px); }
 
-        .arm:nth-child(2) {
-            transform: rotate(120deg) translateY(-60px);
-        }
-
-        .arm:nth-child(3) {
-            transform: rotate(240deg) translateY(-60px);
-        }
-
-        /* The central bearing of the spinner */
         .bearing {
             position: absolute;
             width: 60px;
@@ -140,7 +129,6 @@
             z-index: 10;
         }
         
-        /* A smaller inner circle for detail */
         .bearing::before {
             content: '';
             position: absolute;
@@ -164,6 +152,105 @@
             font-size: 1rem;
             z-index: 20;
         }
+
+        /* Panel for other fidget toys */
+        .fidget-area {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .fidget-section {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .fidget-title {
+            margin: 0 0 15px 0;
+            color: #ecf0f1;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Newton's Cradle Styling */
+        .newtons-cradle {
+            display: flex;
+            height: 100px;
+        }
+        .cradle-ball {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 65% 15%, #ffffff 1px, #e0e0e0 3%, #a7a7a7 60%, #e0e0e0 100%);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .cradle-ball::before {
+            content: '';
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            width: 1px;
+            height: 70px;
+            background: #c7c7c7;
+            transform: translateX(-50%);
+        }
+
+        /* Light Switch Styling */
+        .switch-panel {
+            display: flex;
+            gap: 15px;
+        }
+        .light-switch {
+            position: relative;
+        }
+        .light-switch input {
+            display: none;
+        }
+        .light-switch .slider {
+            width: 30px;
+            height: 60px;
+            background-color: #34495e;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 2px solid #2c3e50;
+        }
+        .light-switch .slider::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+            transition: transform 0.3s;
+        }
+        .light-switch input:checked + .slider {
+            background-color: #f1c40f;
+        }
+        .light-switch input:checked + .slider::before {
+            transform: translateY(30px);
+        }
+
+        /* Animation for Newton's Cradle */
+        .swing-left { animation: swing-left 0.5s ease-in-out; }
+        .swing-right { animation: swing-right 0.5s ease-in-out; }
+
+        @keyframes swing-left {
+            0%, 100% { transform: rotate(0deg); transform-origin: top center; }
+            50% { transform: rotate(-45deg); transform-origin: top center; }
+        }
+        @keyframes swing-right {
+            0%, 100% { transform: rotate(0deg); transform-origin: top center; }
+            50% { transform: rotate(45deg); transform-origin: top center; }
+        }
+
     </style>
 </head>
 <body>
@@ -178,20 +265,42 @@
         </div>
         <div class="bearing"></div>
     </div>
-    <div class="instructions">Click and Drag to Spin! Pop the bubbles!</div>
+    
+    <div class="fidget-area">
+        <div class="fidget-section">
+            <h3 class="fidget-title">Newton's Cradle</h3>
+            <div class="newtons-cradle" id="newtons-cradle"></div>
+        </div>
+        <div class="fidget-section">
+            <h3 class="fidget-title">Light Switches</h3>
+            <div class="switch-panel" id="switch-panel"></div>
+        </div>
+    </div>
+
+    <div class="instructions">Spin, Pop, Click, and Clack!</div>
 
     <script>
+        // --- UNIVERSAL AUDIO CONTEXT ---
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function resumeAudio() {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+        document.addEventListener('click', resumeAudio);
+        document.addEventListener('touchstart', resumeAudio);
+
+
         // --- FIDGET SPINNER LOGIC ---
+        // ... (existing spinner logic is unchanged)
         const spinner = document.getElementById('spinner');
         const spinnerContainer = document.getElementById('spinner-container');
-
         let isDragging = false;
         let rotation = 0;
         let velocity = 0;
         let lastAngle = 0;
         let lastTime = 0;
         const friction = 0.99; 
-
         function getAngle(event) {
             const rect = spinnerContainer.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
@@ -200,7 +309,6 @@
             const clientY = event.touches ? event.touches[0].clientY : event.clientY;
             return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
         }
-        
         function onDragStart(event) {
             isDragging = true;
             spinnerContainer.style.cursor = 'grabbing';
@@ -208,7 +316,6 @@
             lastAngle = getAngle(event);
             lastTime = performance.now();
         }
-
         function onDragMove(event) {
             if (!isDragging) return;
             const currentAngle = getAngle(event);
@@ -226,12 +333,10 @@
             lastAngle = currentAngle;
             lastTime = currentTime;
         }
-
         function onDragEnd() {
             isDragging = false;
             spinnerContainer.style.cursor = 'grab';
         }
-
         function animate() {
             if (!isDragging) {
                 rotation += velocity;
@@ -243,26 +348,19 @@
             }
             requestAnimationFrame(animate);
         }
-
         spinnerContainer.addEventListener('mousedown', onDragStart);
         window.addEventListener('mousemove', onDragMove);
         window.addEventListener('mouseup', onDragEnd);
         spinnerContainer.addEventListener('touchstart', onDragStart, { passive: true });
         window.addEventListener('touchmove', onDragMove, { passive: true });
         window.addEventListener('touchend', onDragEnd);
-
         animate();
 
         // --- BUBBLE WRAP LOGIC ---
+        // ... (existing bubble wrap logic is mostly unchanged, uses universal audio context)
         const bubbleContainer = document.getElementById('bubble-wrap-container');
         const resetButton = document.getElementById('reset-button');
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
         function playPopSound() {
-            // Check if context is running, and resume if not (for browser autoplay policies)
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
             const now = audioContext.currentTime;
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -276,10 +374,9 @@
             oscillator.start(now);
             oscillator.stop(now + 0.1);
         }
-
         function createBubbles() {
             bubbleContainer.innerHTML = ''; // Clear existing bubbles
-            const bubbleSize = 60 + 15; // Bubble size + gap
+            const bubbleSize = 50 + 15; // Bubble size + gap
             const cols = Math.floor(window.innerWidth / bubbleSize);
             const rows = Math.floor(window.innerHeight / bubbleSize);
             const totalBubbles = cols * rows;
@@ -288,7 +385,6 @@
                 const bubble = document.createElement('div');
                 bubble.classList.add('bubble');
                 bubble.addEventListener('mousedown', (e) => {
-                    // Prevent popping a bubble from grabbing the spinner behind it
                     e.stopPropagation(); 
                     if (!bubble.classList.contains('popped')) {
                         bubble.classList.add('popped');
@@ -298,12 +394,64 @@
                 bubbleContainer.appendChild(bubble);
             }
         }
-
         resetButton.addEventListener('click', createBubbles);
-
-        // Initial creation and recreation on window resize
         window.addEventListener('resize', createBubbles);
         createBubbles();
+        
+        // --- NEWTON'S CRADLE LOGIC ---
+        const cradleContainer = document.getElementById('newtons-cradle');
+        const numBalls = 5;
+        for (let i = 0; i < numBalls; i++) {
+            const ball = document.createElement('div');
+            ball.classList.add('cradle-ball');
+            cradleContainer.appendChild(ball);
+        }
+        const cradleBalls = cradleContainer.children;
+        
+        cradleBalls[0].addEventListener('click', () => {
+             cradleBalls[0].classList.add('swing-left');
+             setTimeout(() => cradleBalls[numBalls-1].classList.add('swing-right'), 250);
+        });
+
+        cradleBalls[numBalls-1].addEventListener('click', () => {
+             cradleBalls[numBalls-1].classList.add('swing-right');
+             setTimeout(() => cradleBalls[0].classList.add('swing-left'), 250);
+        });
+
+        cradleContainer.addEventListener('animationend', (e) => {
+            e.target.classList.remove('swing-left', 'swing-right');
+        });
+
+        // --- LIGHT SWITCH LOGIC ---
+        const switchContainer = document.getElementById('switch-panel');
+        const numSwitches = 4;
+        function playClickSound() {
+            const now = audioContext.currentTime;
+            const source = audioContext.createBufferSource();
+            const buffer = audioContext.createBuffer(1, 44100, 44100);
+            const data = buffer.getChannelData(0);
+            for(let i = 0; i < 400; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start(now);
+        }
+
+        for (let i=0; i < numSwitches; i++) {
+            const label = document.createElement('label');
+            label.classList.add('light-switch');
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            const slider = document.createElement('div');
+            slider.classList.add('slider');
+            
+            input.addEventListener('change', playClickSound);
+
+            label.appendChild(input);
+            label.appendChild(slider);
+            switchContainer.appendChild(label);
+        }
 
     </script>
 </body>
