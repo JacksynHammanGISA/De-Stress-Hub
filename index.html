@@ -1,635 +1,214 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Digital De-Stress Hub</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>Interactive Fidget Spinner</title>
     <style>
-
+        /* General styling for the body to center the content */
         body {
-
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
             font-family: 'Inter', sans-serif;
-
-            -webkit-user-select: none; /* Safari */
-
-            -ms-user-select: none; /* IE 10 and IE 11 */
-
-            user-select: none; /* Standard syntax */
-
+            overflow: hidden;
+            touch-action: none; /* Disable default touch actions like pinch-zoom */
         }
 
-        /* Breathing animation */
-
-        .breathing-circle {
-
-            animation: breathe 8s ease-in-out infinite;
-
+        /* Container for the fidget spinner */
+        .spinner-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            cursor: grab;
+            user-select: none; /* Prevents text selection while dragging */
         }
 
-        @keyframes breathe {
-
-            0% { transform: scale(0.6); }
-
-            50% { transform: scale(1); }
-
-            100% { transform: scale(0.6); }
-
+        .spinner-container:active {
+            cursor: grabbing;
         }
 
-        /* Bubble wrap styles */
-
-        .bubble {
-
-            transition: all 0.1s ease-in-out;
-
+        /* The main spinner element that will rotate */
+        .spinner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            will-change: transform; /* Optimization for animations */
         }
 
-        .bubble.popped {
-
-            transform: scale(0.8);
-
-            background-color: #a78bfa !important; /* a lighter purple */
-
-            opacity: 0.5;
-
+        /* Styling for the arms of the spinner */
+        .arm {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            margin-left: -40px;
+            margin-top: -40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Fidget spinner styles */
-
-        #spinner {
-
-            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-
+        /* Positioning each arm around the center */
+        .arm:nth-child(1) {
+            transform: translateY(-60px);
         }
 
-    </style>
+        .arm:nth-child(2) {
+            transform: rotate(120deg) translateY(-60px);
+        }
 
-</head>
+        .arm:nth-child(3) {
+            transform: rotate(240deg) translateY(-60px);
+        }
 
-<body class="bg-slate-900 text-white antialiased">
-
-
-
-    <!-- Header -->
-
-    <header class="text-center py-8 bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
-
-        <h1 class="text-4xl md:text-5xl font-bold text-violet-400">Digital De-Stress Hub</h1>
-
-        <p class="text-slate-300 mt-2 text-lg">Your interactive space to relax and refocus.</p>
-
-    </header>
-
-
-
-    <!-- Main Content -->
-
-    <main class="container mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-
-
-        <!-- Breathing Exercise -->
-
-        <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px]">
-
-            <h2 class="text-2xl font-semibold text-violet-300 mb-4">Controlled Breathing</h2>
-
-            <div id="breathing-container" class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-
-                <div class="absolute w-full h-full bg-violet-600 rounded-full opacity-30 breathing-circle"></div>
-
-                <div class="absolute w-full h-full bg-violet-500 rounded-full opacity-40 breathing-circle" style="animation-delay: -0.2s;"></div>
-
-                <p id="breathing-text" class="text-2xl font-medium z-10">Breathe In...</p>
-
-            </div>
-
-            <p class="text-slate-400 mt-4 text-center">Match your breath to the animation.</p>
-
-        </div>
-
-
-
-        <!-- Virtual Bubble Wrap -->
-
-        <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl">
-
-            <div class="flex justify-between items-center mb-4">
-
-                <h2 class="text-2xl font-semibold text-violet-300">Virtual Bubble Wrap</h2>
-
-                <button id="reset-bubbles" class="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reset</button>
-
-            </div>
-
-            <div id="bubble-wrap-grid" class="grid grid-cols-6 md:grid-cols-8 gap-2 md:gap-3 aspect-square max-w-md mx-auto">
-
-                <!-- Bubbles will be generated by JS -->
-
-            </div>
-
-        </div>
-
-
-
-        <!-- Calm Canvas -->
-
-        <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl lg:col-span-1">
-
-             <div class="flex justify-between items-center mb-4">
-
-                <h2 class="text-2xl font-semibold text-violet-300">Calm Canvas</h2>
-
-                <button id="clear-canvas" class="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Clear</button>
-
-            </div>
-
-            <canvas id="drawing-canvas" class="bg-slate-700 rounded-lg cursor-crosshair w-full h-64 md:h-96"></canvas>
-
-            <p class="text-slate-400 mt-4 text-center">Let your creativity flow. Click and drag to draw.</p>
-
-        </div>
-
+        /* The central bearing of the spinner */
+        .bearing {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #bdc3c7, #95a5a6);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 5px solid #7f8c8d;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
         
+        /* A smaller inner circle for detail */
+        .bearing::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #2c3e50;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-        <!-- Fidget Spinner -->
+        /* Instruction text */
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            color: #bdc3c7;
+            text-align: center;
+            width: 100%;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
 
-        <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px]">
-
-            <h2 class="text-2xl font-semibold text-violet-300 mb-4">Fidget Spinner</h2>
-
-            <div id="spinner-container" class="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center cursor-grab active:cursor-grabbing">
-
-                <svg id="spinner" class="w-full h-full" viewBox="0 0 100 100">
-
-                    <defs>
-
-                        <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-
-                            <stop offset="0%" style="stop-color:rgb(167,139,250);stop-opacity:1" />
-
-                            <stop offset="100%" style="stop-color:rgb(124,58,237);stop-opacity:1" />
-
-                        </radialGradient>
-
-                    </defs>
-
-                    <!-- Center bearing -->
-
-                    <circle cx="50" cy="50" r="10" fill="#475569"/>
-
-                    <!-- Lobes -->
-
-                    <g>
-
-                       <circle cx="50" cy="20" r="15" fill="url(#grad1)"/>
-
-                       <path d="M50 50 L38 25 Q50 40 62 25 Z" fill="rgba(124,58,237,0.8)"></path>
-
-                    </g>
-
-                    <g transform="rotate(120 50 50)">
-
-                       <circle cx="50" cy="20" r="15" fill="url(#grad1)"/>
-
-                       <path d="M50 50 L38 25 Q50 40 62 25 Z" fill="rgba(124,58,237,0.8)"></path>
-
-                    </g>
-
-                    <g transform="rotate(240 50 50)">
-
-                       <circle cx="50" cy="20" r="15" fill="url(#grad1)"/>
-
-                       <path d="M50 50 L38 25 Q50 40 62 25 Z" fill="rgba(124,58,237,0.8)"></path>
-
-                    </g>
-
-                </svg>
-
-            </div>
-
-             <p class="text-slate-400 mt-4 text-center">Click and drag to spin.</p>
-
+    <div class="spinner-container" id="spinner-container">
+        <div class="spinner" id="spinner">
+            <div class="arm"></div>
+            <div class="arm"></div>
+            <div class="arm"></div>
         </div>
-
-
-
-    </main>
-
-
-
-    <!-- Footer -->
-
-    <footer class="text-center p-6 mt-8 text-slate-500">
-
-        <p>Created with care to help you find a moment of peace.</p>
-
-    </footer>
-
-
+        <div class="bearing"></div>
+    </div>
+    <div class="instructions">Click and Drag to Spin!</div>
 
     <script>
+        // DOM element references
+        const spinner = document.getElementById('spinner');
+        const spinnerContainer = document.getElementById('spinner-container');
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // State variables
+        let isDragging = false;
+        let rotation = 0;
+        let velocity = 0;
+        let lastAngle = 0;
+        let lastTime = 0;
+        const friction = 0.99; // Friction coefficient to slow down the spinner
 
-            // --- Breathing Exercise ---
+        // Function to get the angle from the center of the spinner to the mouse/touch point
+        function getAngle(event) {
+            const rect = spinnerContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
+        }
+        
+        // Event handler for when dragging starts
+        function onDragStart(event) {
+            isDragging = true;
+            spinnerContainer.style.cursor = 'grabbing';
+            velocity = 0; // Reset velocity when grabbed
+            lastAngle = getAngle(event);
+            lastTime = performance.now();
+        }
 
-            const breathingText = document.getElementById('breathing-text');
+        // Event handler for while dragging
+        function onDragMove(event) {
+            if (!isDragging) return;
 
-            const breathStates = [
+            const currentAngle = getAngle(event);
+            const currentTime = performance.now();
 
-                { text: "Breathe In...", duration: 4000 },
+            let deltaAngle = currentAngle - lastAngle;
 
-                { text: "Hold...", duration: 2000 },
+            // Handle the angle wrapping around (e.g., from 180 to -179 degrees)
+            if (Math.abs(deltaAngle) > 180) {
+                deltaAngle = deltaAngle > 0 ? deltaAngle - 360 : deltaAngle + 360;
+            }
+            
+            const deltaTime = currentTime - lastTime;
 
-                { text: "Breathe Out...", duration: 4000 }
-
-            ];
-
-            let currentState = 0;
-
-
-
-            function updateBreathingText() {
-
-                breathingText.textContent = breathStates[currentState].text;
-
-                setTimeout(() => {
-
-                    currentState = (currentState + 1) % breathStates.length;
-
-                    updateBreathingText();
-
-                }, breathStates[currentState].duration);
-
+            if (deltaTime > 0) {
+                 velocity = (deltaAngle / deltaTime) * 15; // Calculate velocity
             }
 
-            updateBreathingText();
+            rotation += deltaAngle;
+            spinner.style.transform = `rotate(${rotation}deg)`;
+            
+            lastAngle = currentAngle;
+            lastTime = currentTime;
+        }
 
+        // Event handler for when dragging ends
+        function onDragEnd() {
+            isDragging = false;
+            spinnerContainer.style.cursor = 'grab';
+        }
 
+        // The main animation loop
+        function animate() {
+            if (!isDragging) {
+                rotation += velocity;
+                velocity *= friction; // Apply friction to slow down
 
-
-
-            // --- Virtual Bubble Wrap ---
-
-            const bubbleGrid = document.getElementById('bubble-wrap-grid');
-
-            const resetButton = document.getElementById('reset-bubbles');
-
-            const bubbleCount = 48;
-
-            let synth;
-
-
-
-            function createBubbles() {
-
-                bubbleGrid.innerHTML = ''; // Clear existing bubbles
-
-                 if (!synth) {
-
-                    synth = new Tone.MembraneSynth({
-
-                        pitchDecay: 0.01,
-
-                        octaves: 6,
-
-                        oscillator: { type: 'sine' },
-
-                        envelope: {
-
-                            attack: 0.001,
-
-                            decay: 0.2,
-
-                            sustain: 0.01,
-
-                            release: 0.1,
-
-                            attackCurve: 'exponential'
-
-                        }
-
-                    }).toDestination();
-
+                // Stop the animation if the velocity is very low
+                if (Math.abs(velocity) < 0.01) {
+                    velocity = 0;
                 }
-
                 
-
-                for (let i = 0; i < bubbleCount; i++) {
-
-                    const bubble = document.createElement('div');
-
-                    bubble.classList.add('bubble', 'bg-violet-500', 'rounded-full', 'cursor-pointer', 'w-full', 'h-full', 'aspect-square');
-
-                    bubble.addEventListener('click', () => {
-
-                        if (!bubble.classList.contains('popped')) {
-
-                            bubble.classList.add('popped');
-
-                            if (Tone.context.state !== 'running') {
-
-                                Tone.context.resume();
-
-                            }
-
-                            synth.triggerAttackRelease('C2', '8n');
-
-                        }
-
-                    }, { once: true }); // event listener is removed after one click
-
-                    bubbleGrid.appendChild(bubble);
-
-                }
-
+                spinner.style.transform = `rotate(${rotation}deg)`;
             }
-
-            
-
-            resetButton.addEventListener('click', createBubbles);
-
-            createBubbles(); // Initial creation
-
-
-
-            // --- Calm Canvas ---
-
-            const canvas = document.getElementById('drawing-canvas');
-
-            const clearCanvasBtn = document.getElementById('clear-canvas');
-
-            const ctx = canvas.getContext('2d');
-
-            let isDrawing = false;
-
-            let lastX = 0;
-
-            let lastY = 0;
-
-
-
-            function resizeCanvas() {
-
-                const rect = canvas.getBoundingClientRect();
-
-                canvas.width = rect.width;
-
-                canvas.height = rect.height;
-
-                ctx.strokeStyle = '#f8fafc'; // white
-
-                ctx.lineWidth = 3;
-
-                ctx.lineCap = 'round';
-
-                ctx.lineJoin = 'round';
-
-            }
-
-
-
-            function draw(e) {
-
-                if (!isDrawing) return;
-
-                const [x, y] = getMousePos(e);
-
-                ctx.beginPath();
-
-                ctx.moveTo(lastX, lastY);
-
-                ctx.lineTo(x, y);
-
-                ctx.stroke();
-
-                [lastX, lastY] = [x, y];
-
-            }
-
-
-
-            function getMousePos(e) {
-
-                const rect = canvas.getBoundingClientRect();
-
-                let x, y;
-
-                if (e.touches && e.touches.length > 0) {
-
-                    x = e.touches[0].clientX - rect.left;
-
-                    y = e.touches[0].clientY - rect.top;
-
-                } else {
-
-                    x = e.clientX - rect.left;
-
-                    y = e.clientY - rect.top;
-
-                }
-
-                return [x, y];
-
-            }
-
-
-
-            function startDrawing(e) {
-
-                isDrawing = true;
-
-                [lastX, lastY] = getMousePos(e);
-
-            }
-
-
-
-            canvas.addEventListener('mousedown', startDrawing);
-
-            canvas.addEventListener('mousemove', draw);
-
-            canvas.addEventListener('mouseup', () => isDrawing = false);
-
-            canvas.addEventListener('mouseout', () => isDrawing = false);
-
-
-
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
-
-            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-
-            canvas.addEventListener('touchend', () => isDrawing = false);
-
-
-
-            clearCanvasBtn.addEventListener('click', () => {
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            });
-
-            
-
-            window.addEventListener('resize', resizeCanvas);
-
-            resizeCanvas();
-
-
-
-            // --- Fidget Spinner ---
-
-            const spinner = document.getElementById('spinner');
-
-            const spinnerContainer = document.getElementById('spinner-container');
-
-            let isDragging = false;
-
-            let currentAngle = 0;
-
-            let startAngle = 0;
-
-            let lastMouseAngle = 0;
-
-            let angularVelocity = 0;
-
-            const friction = 0.98;
-
-
-
-            function spinLoop() {
-
-                if (Math.abs(angularVelocity) > 0.01) {
-
-                    currentAngle += angularVelocity;
-
-                    angularVelocity *= friction;
-
-                    spinner.style.transform = `rotate(${currentAngle}deg)`;
-
-                    requestAnimationFrame(spinLoop);
-
-                } else {
-
-                    angularVelocity = 0;
-
-                }
-
-            }
-
-
-
-            function getAngle(event) {
-
-                const rect = spinnerContainer.getBoundingClientRect();
-
-                const centerX = rect.left + rect.width / 2;
-
-                const centerY = rect.top + rect.height / 2;
-
-                const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-
-                const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-
-                return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
-
-            }
-
-            
-
-            function startSpin(e) {
-
-                isDragging = true;
-
-                angularVelocity = 0; // Stop any ongoing spin
-
-                startAngle = getAngle(e);
-
-                lastMouseAngle = startAngle;
-
-                spinner.style.transition = 'none'; // Allow direct manipulation
-
-            }
-
-
-
-            function doSpin(e) {
-
-                if (!isDragging) return;
-
-                const mouseAngle = getAngle(e);
-
-                const angleDiff = mouseAngle - lastMouseAngle;
-
-
-
-                // Handle wrapping around 180/-180 degrees
-
-                if (Math.abs(angleDiff) < 180) { // Avoid huge jumps on wrap
-
-                   angularVelocity = angleDiff * 1.5; // Multiplier for sensitivity
-
-                   currentAngle += angleDiff;
-
-                   spinner.style.transform = `rotate(${currentAngle}deg)`;
-
-                }
-
-
-
-                lastMouseAngle = mouseAngle;
-
-            }
-
-
-
-            function endSpin(e) {
-
-                if (!isDragging) return;
-
-                isDragging = false;
-
-                spinner.style.transition = 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)'; // Smooth slowdown
-
-                requestAnimationFrame(spinLoop);
-
-            }
-
-            
-
-            spinnerContainer.addEventListener('mousedown', startSpin);
-
-            document.addEventListener('mousemove', doSpin);
-
-            document.addEventListener('mouseup', endSpin);
-
-
-
-            spinnerContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startSpin(e); });
-
-            document.addEventListener('touchmove', (e) => { if(isDragging) e.preventDefault(); doSpin(e); });
-
-            document.addEventListener('touchend', endSpin);
-
-        });
-
-
-
+            requestAnimationFrame(animate);
+        }
+
+        // Add event listeners for both mouse and touch events
+        spinnerContainer.addEventListener('mousedown', onDragStart);
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
+        
+        spinnerContainer.addEventListener('touchstart', onDragStart, { passive: true });
+        window.addEventListener('touchmove', onDragMove, { passive: true });
+        window.addEventListener('touchend', onDragEnd);
+
+        // Start the animation loop
+        animate();
     </script>
-
 </body>
-
 </html>
